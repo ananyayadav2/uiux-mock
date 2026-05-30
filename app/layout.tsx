@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import Provider from "./provider";
 
+const appFont = DM_Sans({ subsets: ["latin"] });
 
-const font = DM_Sans({ 
-  subsets: ["latin"]
- });
-
-export const metadata: Metadata = {
+export const metadata = {
   title: "UIUX Mock Generator",
   description: "Generate high quality free UI UX mobile and web mockup designs",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body 
-      className={font.className}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={appFont.className}>
+          <Provider>
+            {children}
+          </Provider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
