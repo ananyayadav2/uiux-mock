@@ -31,30 +31,35 @@ const {user} = useUser();
 const router = useRouter();
 const [loading, setLoading] = useState(false);
 
-const onCreateProject=async()=>{
-    if(!user) {
-      router.push('/sign-in');
-      return;
+const onCreateProject = async () => {
+    if (!user) {
+        router.push('/sign-in');
+        return;
     }
-    // Create new project
-    if(!userInput) 
-        {
-            return;
+
+    if (!userInput) return;
+
+    setLoading(true);
+    try {
+        // CORRECTED: This matches your folder structure 'app/api/project'
+        const response = await axios.post("/api/project", {
+            userInput: userInput,
+            device: device,
+        });
+
+        const projectId = response.data?.projectId;
+        if (projectId) {
+            router.push(`/project/${projectId}`);
+        } else {
+            console.error("No projectId returned from server");
         }
-        setLoading(true);
-
-    const projectID=crypto.randomUUID();
-    const result=await axios.post('/api/user/project',{
-        userInput: userInput,
-        device: device,
-        projectId: projectID,
-        })
-
-        console.log(result.data);
+    } catch (error: any) {
+        console.error('Failed to create project:', error.response?.data || error.message);
+    } finally {
         setLoading(false);
-        
-        //Navigate to nproject Route
-  }
+    }
+     };
+      
 
   return (
     <div className='p-10 md:px-24 lg:px-48 xl:px-60 mt-20'>

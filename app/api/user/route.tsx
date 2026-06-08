@@ -1,27 +1,33 @@
 import { db } from "@/config/db";
 import { usersTable } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
-  const user = await currentUser();
+  try {
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const users = await db.select().from(usersTable)
-    .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress as string));
+    const email = user.primaryEmailAddress?.emailAddress;
+    if (!email) return NextResponse.json({ error: "No email found" }, { status: 400 });
 
-  if (users?.length==0) {
-    const data = {
-      name: user?.fullName ?? '',
-      email: user?.primaryEmailAddress?.emailAddress as string
-    };
+    // Check if user exists
+    const users = await db.select().from(usersTable).where(eq(usersTable.email, email));
 
+    if (users.length > 0) {
+      return NextResponse.json(users[0]);
+    }
+
+    // Insert new user
     const result = await db.insert(usersTable).values({
-      ...data
+      name: user.fullName || 'Anonymous',
+      email: email,
     }).returning();
 
     return NextResponse.json(result[0]);
+  } catch (error: any) {
+    console.error("User API Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  return NextResponse.json(users[0]);
 }
