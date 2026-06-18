@@ -15,25 +15,53 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMsg, setLoadingMsg] = useState<string>('Loading...');
 
+  // Changed screens type to any[] to safely accept both DB and AI JSON formats
+  const generateScreenUIUX = async (screens: any[]) => {
+    setLoading(true);
+    for (let index = 0; index < screens.length; index++) {
+      const screen = screens[index];
+
+      if (screen.code) {
+        continue;
+      }
+
+      setLoadingMsg(`Generating screen ${index + 1} of ${screens.length}...`);
+
+      try {
+        const result = await axios.post('/api/generate-screen-ui', {
+          projectId: projectId,
+          // THE FIX: Fallback to the AI JSON keys if the DB keys aren't present yet!
+          screenId: screen.screenId || screen.id,
+          screenName: screen.screenName || screen.name,
+          purpose: screen.purpose,
+          screenDescription: screen.screenDescription || screen.layoutDescription
+        });
+
+        setScreenConfig((prev) =>
+          prev.map((item, i) =>
+            i === index ? { ...item, code: result.data.code } : item
+          )
+        );
+      } catch (e) {
+        console.error("Error generating screen UI:", e);
+      }
+    }
+    setLoading(false);
+  };
+
   const generateScreenConfig = async (detail: ProjectType) => {
     setLoadingMsg('Generating Screen Config...');
     setLoading(true);
     try {
-      // Data sent flat to match the destructuring in route.ts
       const result = await axios.post('/api/generate-config', {
         projectId: projectId,
         deviceType: detail?.device || 'desktop',
         userInput: detail?.userInput || 'Generate a standard dashboard layout'
       });
 
-      // 1. THIS IS WHAT YOU WERE MISSING! Print it to the console exactly like the tutorial:
       console.log(result.data);
-
-      // 2. Properly separate the data into your React states
-      // We only want the array of screens in this state variable
       setScreenConfig(result.data.screens); 
       
-      // 3. Update the project details so your UI (like the selected theme) updates immediately!
       setProjectDetail((prev: any) => ({
         ...prev,
         projectName: result.data.projectName,
@@ -41,11 +69,12 @@ export default function ProjectPage() {
         theme: result.data.theme
       }));
 
+      generateScreenUIUX(result.data.screens);
+
     } catch (e) {
       console.error("Generation error:", e);
-    } finally {
       setLoading(false);
-    }
+    } 
   };
 
   const GetProjectDetails = async () => {
@@ -61,7 +90,7 @@ export default function ProjectPage() {
       if (!data.screenConfig || data.screenConfig.length === 0) {
         await generateScreenConfig(data.projectDetail);
       } else {
-        setLoading(false);
+        generateScreenUIUX(data.screenConfig);
       }
     } catch (e) {
       console.error("Fetch error:", e);
