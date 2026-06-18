@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import ProjectHeader from './_shared/ProjectHeader';
 import SettingsSection from './_shared/SettingsSection';
+import Canvas from './_shared/canvas';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
 import { ProjectType, ScreenConfig } from '@/type/type';
@@ -15,7 +16,6 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMsg, setLoadingMsg] = useState<string>('Loading...');
 
-  // Changed screens type to any[] to safely accept both DB and AI JSON formats
   const generateScreenUIUX = async (screens: any[]) => {
     setLoading(true);
     for (let index = 0; index < screens.length; index++) {
@@ -30,7 +30,6 @@ export default function ProjectPage() {
       try {
         const result = await axios.post('/api/generate-screen-ui', {
           projectId: projectId,
-          // THE FIX: Fallback to the AI JSON keys if the DB keys aren't present yet!
           screenId: screen.screenId || screen.id,
           screenName: screen.screenName || screen.name,
           purpose: screen.purpose,
@@ -59,7 +58,6 @@ export default function ProjectPage() {
         userInput: detail?.userInput || 'Generate a standard dashboard layout'
       });
 
-      console.log(result.data);
       setScreenConfig(result.data.screens); 
       
       setProjectDetail((prev: any) => ({
@@ -115,7 +113,18 @@ export default function ProjectPage() {
             </h2>
           </div>
         )}
-        {!loading && <SettingsSection />}
+        
+        {/* Main Content Layout */}
+        <div className="flex w-full">
+          {!loading && <SettingsSection />}
+          
+          {/* Canvas Section */}
+          <div className="flex-1">
+            {!loading && screenConfig.length > 0 && (
+              <Canvas projectDetail={projectDetail} screenConfig={screenConfig} />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
