@@ -116,7 +116,7 @@ export default function ProjectPage() {
         
         {/* Main Content Layout */}
         <div className="flex w-full">
-          {!loading && <SettingsSection />}
+          {!loading && <SettingsSection projectDetail={projectDetail} />}
           
           {/* Canvas Section */}
           <div className="flex-1">
