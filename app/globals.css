@@ -134,8 +134,3 @@
     @apply font-sans;
   }
 }
-
-/* Prevent iframes from swallowing mouse events during react-rnd drag */
-body.is-dragging iframe {
-  pointer-events: none !important;
-}
