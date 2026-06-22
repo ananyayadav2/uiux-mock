@@ -1,4 +1,8 @@
 "use client";
+<<<<<<< HEAD
+
+=======
+>>>>>>> main
 import { themeToCssVars, THEMES } from '@/data/Themes';
 import { ProjectType } from '@/type/type';
 import React, { useState } from 'react';

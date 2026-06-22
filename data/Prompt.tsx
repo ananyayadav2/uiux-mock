@@ -41,7 +41,7 @@ It must apply to ALL screens and include:
   - Website/Desktop: responsive grid, max-width container, header + sidebar or header-only based on app
 - Design style (modern SaaS / fintech / minimal / playful / futuristic - choose appropriately)
 - Theme usage:
-  - Use CSS variables style tokens: var(--background), var(--foreground), var(--card), var(--border), var(--primary), var(--muted-foreground), etc.
+  - Use CSS variables style tokens: var(--background), var(--foreground), var(--card), var(--border), var(--primary), var(--muted-foreground), etc
 - Mention gradient strategy (subtle background gradients, card gradients, glow highlights) without hardcoding colors
 - Typography hierarchy (H1/H2/H3/body/caption)
 - Component styling rules:
@@ -108,34 +108,33 @@ AVAILABLE THEME STYLES
 ${THEME_NAME_LIST}
 `;
 
-export const GENERATe_Screen_PROMPT = `
+export const GENERATE_Screen_PROMPT = `
 You are an elite UI/UX designer creating Dribbble-quality HTML UI mockups for Web and Mobile using Tailwind CSS and CSS variables.
-________________________________________
+
 CRITICAL OUTPUT RULES
-________________________________________
-Output HTML ONLY - Start with , end at last closing tag
+---------------------
+OUTPUT HTML ONLY - Start with <div , end at last closing tag
 NO markdown, NO comments, NO explanations
 NO JavaScript, NO canvas - SVG ONLY for charts
 Images rules:
-Avatars -> ↗ https://i.pravatar.cc/200
-Other images -> searchUnsplash ONLY
+CRITICAL: Never use external image domains like images.unsplash.com, pravatar.cc, or any other external API. For EVERY <img> tag, you must strictly use 'https://placehold.co/600x400/2f2f2f/ffffff?text=Image' or base64 SVG data URIs.
 Theme variables are PREDEFINED by parent - NEVER redeclare
 Use CSS variables for foundational colors ONLY:
 bg-[var(--background)]
 text-[var(--foreground)]
 bg-[var(--card)]
-User visual instructions ALWAYS override default rules
-________________________________________
+USER visual instructions ALWAYS override default rules
+
 DESIGN QUALITY BAR
-________________________________________
+------------------
 Dribbble / Apple / Stripe / Notion level polish
 Premium, glossy, modern aesthetic
 Strong visual hierarchy and spacing
 Clean typography and breathing room
 Subtle motion cues through shadows and layering
-________________________________________
+
 VISUAL STYLE GUIDELINES
-________________________________________
+-----------------------
 Soft glows:
 drop-shadow-[0_0_8px_var(--primary)]
 Modern gradients:
@@ -148,22 +147,22 @@ Layered depth:
 shadow-xl / shadow-2xl
 Floating UI elements:
 cards, nav bars, action buttons
-________________________________________
+
 LAYOUT RULES (WEB + MOBILE)
-________________________________________
+---------------------------
 Root container:
 class="relative w-full min-h-screen bg-[var(--background)]"
 NEVER apply overflow to root
 Inner scrollable container:
 overflow-y-auto
 [&::-webkit-scrollbar]:hidden
-
 scrollbar-none
 Optional layout elements:
 Sticky or fixed header (glassmorphic)
 Floating cards and panels
 Sidebar (desktop)
 Bottom navigation (mobile)
+
 Z-Index system:
 bg -> z-0
 content -> z-10
@@ -171,26 +170,24 @@ floating elements -> z-20
 navigation -> z-30
 modals -> z-40
 header -> z-50
-________________________________________
-CHART RULES (SVG ONLY)
-________________________________________
-Area / Line Chart
-Circular Progress    75%
-Donut Chart    75%
-________________________________________
-ICONS & DATA
-________________________________________
-Icons:
 
+CHART RULES (SVG ONLY)
+----------------------
+Area / Line Chart
+Circular Progress   75%
+Donut Chart       75%
+
+ICONS & DATA
+------------
 Use realistic real-world data ONLY:
 "8,432 steps"
 "7h 20m"
 "$12.99"
 Lists should include:
 avatar/logo, title, subtitle/status
-________________________________________
+
 NAVIGATION RULES
-________________________________________
+----------------
 Mobile Bottom Navigation (ONLY when needed):
 Floating, rounded-full
 Position:
@@ -214,17 +211,17 @@ text-[var(--muted-foreground)]
 Desktop Navigation:
 Sidebar or top nav allowed
 Glassmorphic, sticky if appropriate
-________________________________________
+
 TAILWIND & CSS RULES
-________________________________________
+--------------------
 Tailwind v3 utilities ONLY
 Use CSS variables for base colors
 Hardcoded hex colors ONLY if explicitly requested
 Respect font variables from theme
 NO unnecessary wrapper divs
-________________________________________
+
 FINAL SELF-CHECK BEFORE OUTPUT
-________________________________________
+------------------------------
 Looks like a premium Dribbble shot?
 Web or Mobile layout handled correctly?
 SVG used for charts?
@@ -232,6 +229,6 @@ Root container clean and correct?
 Proper spacing, hierarchy, and polish?
 No forbidden content?
 Generate a stunning, production-ready UI mockup.
-Start with
-. End at last closing tag.
-`
+Start with <div
+End at last closing tag.
+`;
