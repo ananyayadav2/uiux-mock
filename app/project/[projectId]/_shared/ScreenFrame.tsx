@@ -1,6 +1,5 @@
 "use client";
 
-import html2canvas from 'html2canvas';
 import { themeToCssVars, THEMES } from '@/data/Themes';
 import { ProjectType } from '@/type/type';
 import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
