@@ -1,8 +1,4 @@
 "use client";
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 import { themeToCssVars, THEMES } from '@/data/Themes';
 import { ProjectType } from '@/type/type';
 import React, { useState } from 'react';
@@ -90,15 +86,6 @@ export default function ScreenFrame({ screen, x, y, width, height, setPanningEna
             className="w-full h-full border-none"
             sandbox="allow-scripts allow-same-origin"
           />
-          <div className="flex-1 rounded-xl overflow-hidden bg-gray-50 border relative">
-  <iframe
-    // Make sure you are using the 'html' variable we constructed!
-    srcDoc={html} 
-    className="w-full h-full border-none"
-    // Keep these sandbox attributes for now
-    sandbox="allow-scripts allow-same-origin"
-  />
-</div>
         </div>
       </div>
     </Rnd>
