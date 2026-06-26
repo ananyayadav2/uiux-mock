@@ -24,12 +24,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'sonner';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { SettingContext } from '@/context/SettingContext';
+import { UserDetailContext } from '@/context/UserDetailContext';
 import axios from 'axios';
 import domtoimage from 'dom-to-image';
 
 export default function ScreenHandler({ screen }: { screen: any }) {
-  const { settingDetail } = useContext(SettingContext);
+  const { userDetails } = useContext(UserDetailContext);
   const [isDeleting, setIsDeleting] = useState(false);
   
   // New states for the Edit feature
@@ -42,14 +42,14 @@ export default function ScreenHandler({ screen }: { screen: any }) {
   };
 
   const onDelete = async () => {
-    if (!settingDetail?.projectId || !screen?.screenId) {
+    if (!userDetails?.projectId || !screen?.screenId) {
       toast.error("Missing project or screen ID");
       return;
     }
 
     setIsDeleting(true);
     try {
-      await axios.delete(`/api/project?projectId=${settingDetail.projectId}&screenId=${screen.screenId}`);
+      await axios.delete(`/api/project?projectId=${userDetails.projectId}&screenId=${screen.screenId}`);
       toast.success("Screen deleted successfully");
       window.location.reload();
     } catch (error) {
@@ -61,7 +61,7 @@ export default function ScreenHandler({ screen }: { screen: any }) {
 
   // New method for Editing the Screen using AI
   const onEdit = async () => {
-    if (!settingDetail?.projectId || !screen?.screenId) {
+    if (!userDetails?.projectId || !screen?.screenId) {
       toast.error("Missing project or screen ID");
       return;
     }
@@ -76,7 +76,7 @@ export default function ScreenHandler({ screen }: { screen: any }) {
     try {
       // Calls the new API endpoint we are about to create
       await axios.post("/api/edit-screen", {
-        projectId: settingDetail.projectId,
+        projectId: userDetails.projectId,
         screenId: screen.screenId,
         userInput: editUserInput,
         oldCode: screen.code,
