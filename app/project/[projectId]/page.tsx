@@ -18,14 +18,30 @@ export default function ProjectPage() {
 
   const generateScreenUIUX = async (screens: any[]) => {
     setLoading(true);
-    for (let index = 0; index < screens.length; index++) {
-      const screen = screens[index];
+
+    if (!screens?.length) {
+      setLoading(false);
+      return;
+    }
+
+    const normalizedScreens = screens.map((screen) => ({
+      ...screen,
+      screenId: screen.screenId || screen.id,
+      screenName: screen.screenName || screen.name,
+      screenDescription: screen.screenDescription || screen.layoutDescription,
+      code: screen.code || ''
+    }));
+
+    setScreenConfig(normalizedScreens);
+
+    for (let index = 0; index < normalizedScreens.length; index++) {
+      const screen = normalizedScreens[index];
 
       if (screen.code) {
         continue;
       }
 
-      setLoadingMsg(`Generating screen ${index + 1} of ${screens.length}...`);
+      setLoadingMsg(`Generating screen ${index + 1} of ${normalizedScreens.length}...`);
 
       try {
         const result = await axios.post('/api/generate-screen-ui', {
@@ -33,12 +49,18 @@ export default function ProjectPage() {
           screenId: screen.screenId || screen.id,
           screenName: screen.screenName || screen.name,
           purpose: screen.purpose,
-          screenDescription: screen.screenDescription || screen.layoutDescription
+          screenDescription: screen.screenDescription || screen.layoutDescription,
+          userInput: screen.purpose || `Generate a polished UI for ${screen.screenName || screen.name || 'this screen'}`,
+          oldCode: screen.code || ''
         });
 
+        const generatedCode = result.data?.code || result.data?.result?.[0]?.code || '';
+
         setScreenConfig((prev) =>
-          prev.map((item, i) =>
-            i === index ? { ...item, code: result.data.code } : item
+          prev.map((item) =>
+            (item.screenId || item.id) === (screen.screenId || screen.id)
+              ? { ...item, code: generatedCode }
+              : item
           )
         );
       } catch (e) {
@@ -82,13 +104,15 @@ export default function ProjectPage() {
       const result = await axios.get('/api/project?projectId=' + projectId);
       const data = result.data;
 
-      setProjectDetail(data.projectDetail);
-      setScreenConfig(data.screenConfig);
+      const screenList = data.screenConfig || data.screenconfig || [];
 
-      if (!data.screenConfig || data.screenConfig.length === 0) {
+      setProjectDetail(data.projectDetail);
+      setScreenConfig(screenList);
+
+      if (!screenList || screenList.length === 0) {
         await generateScreenConfig(data.projectDetail);
       } else {
-        generateScreenUIUX(data.screenConfig);
+        generateScreenUIUX(screenList);
       }
     } catch (e) {
       console.error("Fetch error:", e);

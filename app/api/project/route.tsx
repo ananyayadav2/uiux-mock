@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
     projectDetail: result[0],
+    screenConfig: Screenconfig,
     screenconfig: Screenconfig
     });
   } catch (e) {
