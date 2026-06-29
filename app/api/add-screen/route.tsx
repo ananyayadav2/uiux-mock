@@ -3,6 +3,7 @@ import { db } from '@/config/db';
 import { ScreenConfigTable } from '@/config/schema';
 import { openrouter } from '@/config/openrouter';
 import { currentUser } from '@clerk/nextjs/server';
+import { jsonrepair } from 'jsonrepair';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,11 @@ export async function POST(req: NextRequest) {
 
     if (!projectId || !prompt) {
       return NextResponse.json({ error: 'Missing projectId or prompt' }, { status: 400 });
+    }
+
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error('Missing OPENROUTER_API_KEY in add-screen route');
+      return NextResponse.json({ error: 'OPENROUTER_API_KEY is not configured' }, { status: 500 });
     }
 
     const user = await currentUser();
@@ -32,16 +38,18 @@ export async function POST(req: NextRequest) {
 
     let rawContent = response.choices?.[0]?.message?.content;
     if (!rawContent) {
+      console.error('OpenRouter returned empty content for add-screen');
       return NextResponse.json({ error: 'Empty response from AI' }, { status: 500 });
     }
 
-    const cleaned = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
+    const cleaned = String(rawContent).replace(/```json/g, '').replace(/```/g, '').trim();
     let parsed;
     try {
-      parsed = JSON.parse(cleaned);
+      const repairedJson = jsonrepair(cleaned);
+      parsed = JSON.parse(repairedJson);
     } catch (error) {
       console.error('Add screen JSON parse error:', error, cleaned);
-      return NextResponse.json({ error: 'Unable to parse AI response' }, { status: 500 });
+      return NextResponse.json({ error: 'Unable to parse AI response', raw: cleaned }, { status: 500 });
     }
 
     const newScreen = {
