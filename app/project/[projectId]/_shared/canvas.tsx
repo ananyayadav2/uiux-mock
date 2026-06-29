@@ -6,9 +6,10 @@ import ScreenFrame from './ScreenFrame';
 interface CanvasProps {
   projectDetail: any;
   screenConfig: any[];
+  selectedTheme: string;
 }
 
-export default function Canvas({ projectDetail, screenConfig }: CanvasProps) {
+export default function Canvas({ projectDetail, screenConfig, selectedTheme }: CanvasProps) {
   const [panningEnable, setPanningEnable] = useState(true);
 
   const isMobile = projectDetail?.device === 'mobile';
@@ -18,7 +19,7 @@ export default function Canvas({ projectDetail, screenConfig }: CanvasProps) {
   const gap = 50;
 
   return (
-    <div className="w-full h-[90vh] bg-gray-100 relative overflow-hidden">
+    <div id="project-design-canvas" className="w-full h-[90vh] bg-gray-100 relative overflow-hidden">
       <TransformWrapper
         initialScale={0.7}
         minScale={0.3}
@@ -50,6 +51,7 @@ export default function Canvas({ projectDetail, screenConfig }: CanvasProps) {
                   height={screenHeight}
                   setPanningEnable={setPanningEnable}
                   projectDetail={projectDetail}
+                  selectedTheme={selectedTheme}
                 />
               );
             })}

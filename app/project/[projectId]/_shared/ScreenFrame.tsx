@@ -12,16 +12,14 @@ interface ScreenFrameProps {
   height: number;
   setPanningEnable: (enable: boolean) => void;
   projectDetail: ProjectType | undefined;
+  selectedTheme: string;
 }
 
-export default function ScreenFrame({ screen, x, y, width, height, setPanningEnable, projectDetail }: ScreenFrameProps) {
+export default function ScreenFrame({ screen, x, y, width, height, setPanningEnable, projectDetail, selectedTheme }: ScreenFrameProps) {
   const [size, setSize] = useState({ width, height });
-  
-  const settingData = projectDetail; 
 
-  const selectedTheme = settingData?.theme as any;
-  // @ts-ignore
-  const theme = THEMES[selectedTheme];
+  const currentTheme = selectedTheme || projectDetail?.theme;
+  const theme = THEMES[currentTheme as keyof typeof THEMES] || THEMES.AURORA_INK;
 
   const html = `
     <!DOCTYPE html>
@@ -36,7 +34,7 @@ export default function ScreenFrame({ screen, x, y, width, height, setPanningEna
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
     <style>
-    ${themeToCssVars(projectDetail?.theme)}
+    ${themeToCssVars(theme)}
     </style>
     </head>
     <body class="bg-[var(--background)] text-[var(--foreground)] w-full">
@@ -82,6 +80,7 @@ export default function ScreenFrame({ screen, x, y, width, height, setPanningEna
 
         <div className="flex-1 rounded-xl overflow-hidden bg-gray-50 border relative">
           <iframe
+            key={`${screen.screenId}-${currentTheme}`}
             srcDoc={html}
             className="w-full h-full border-none"
             sandbox="allow-scripts allow-same-origin"

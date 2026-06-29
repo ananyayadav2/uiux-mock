@@ -1,50 +1,76 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { THEME_NAME_LIST, THEMES } from '@/data/Themes';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Camera, Share } from 'lucide-react';
-import { Input } from '@/components/ui/input'; // Assuming you have an Input component
-import { Textarea } from '@/components/ui/textarea'; // Assuming you have a Textarea component
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
-function SettingsSection() {
-  const [selectedTheme, setSelectedTheme] = useState('AURORA_INK');
-  const [projectName, setProjectName] = useState('');
-  const [userNewScreenInput, setUserNewScreenInput] = useState('');
+interface SettingsSectionProps {
+  selectedTheme: string;
+  onThemeChange: (theme: string) => void;
+  projectName: string;
+  onProjectNameChange: (value: string) => void;
+  userNewScreenInput: string;
+  onUserNewScreenInputChange: (value: string) => void;
+  onGenerateNewScreen: () => void;
+  onScreenshot: () => void;
+  onShare: () => void;
+  isGeneratingNewScreen: boolean;
+}
 
+function SettingsSection({
+  selectedTheme,
+  onThemeChange,
+  projectName,
+  onProjectNameChange,
+  userNewScreenInput,
+  onUserNewScreenInputChange,
+  onGenerateNewScreen,
+  onScreenshot,
+  onShare,
+  isGeneratingNewScreen,
+}: SettingsSectionProps) {
   return (
     <div className='p-5 w-[300px] h-[90vh] border-r'>
       <h2 className='font-medium text-lg'>Settings</h2>
 
-      {/* Project Name Input */}
       <div className='mt-3'>
         <h2 className='text-sm mb-1'>Project Name</h2>
-        <Input 
-          placeholder='Project Name' 
-          onChange={(event) => setProjectName(event.target.value)} 
+        <Input
+          placeholder='Project Name'
+          value={projectName}
+          onChange={(event) => onProjectNameChange(event.target.value)}
         />
       </div>
 
-      {/* Generate New Screen */}
       <div className='mt-5'>
         <h2 className='text-sm mb-1'>Generate New Screen</h2>
-        <Textarea 
+        <Textarea
           placeholder='Enter Prompt to Generate screen using AI'
-          onChange={(event) => setUserNewScreenInput(event.target.value)}
+          value={userNewScreenInput}
+          onChange={(event) => onUserNewScreenInputChange(event.target.value)}
+          rows={4}
         />
-        <Button size='sm' className='mt-2 w-full'>
-          <Sparkles className='mr-2' /> Generate with AI
+        <Button
+          size='sm'
+          className='mt-2 w-full'
+          onClick={onGenerateNewScreen}
+          disabled={isGeneratingNewScreen}
+        >
+          <Sparkles className='mr-2' />
+          {isGeneratingNewScreen ? 'Generating...' : 'Generate with AI'}
         </Button>
       </div>
 
-      {/* Themes Section */}
       <div className='mt-5'>
         <h2 className='text-sm mb-1'>Themes</h2>
         <div className='h-[200px] overflow-auto'>
           {THEME_NAME_LIST.map((theme, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`p-3 border rounded-xl mb-2 cursor-pointer ${theme === selectedTheme ? 'border-primary bg-primary/20' : ''}`}
-              onClick={() => setSelectedTheme(theme)}
+              onClick={() => onThemeChange(theme)}
             >
               <h2 className="font-semibold">{theme}</h2>
               <div className='flex gap-2 mt-2'>
@@ -62,10 +88,10 @@ function SettingsSection() {
       <div className='mt-5'>
         <h2 className='text-sm mb-1'>Extras</h2>
         <div className='flex gap-3'>
-          <Button size='sm' variant='outline' className='mt-2'>
+          <Button size='sm' variant='outline' className='mt-2' onClick={onScreenshot}>
             <Camera className='mr-2' /> Screenshot
           </Button>
-          <Button size='sm' variant='outline' className='mt-2'>
+          <Button size='sm' variant='outline' className='mt-2' onClick={onShare}>
             <Share className='mr-2' /> Share
           </Button>
         </div>

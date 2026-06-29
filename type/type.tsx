@@ -4,9 +4,9 @@ export type ProjectType = {
   device: string,
   userInput: string,
   createdOn: string,
+  name?: string,
   projectName?: string,
   theme?: string,
-
 }
 
 export type ScreenConfig = {
